@@ -1,0 +1,30 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  dir: '.'r5t6 
+  args: [
+    'build',
+    '-t',
+    'africa-south1-docker.pkg.dev/$PROJECT_ID/jozimarket/cms:$SHORT_SHA',
+    '-f',
+    './Dockerfile',
+    '.'
+  ]
+
+- name: 'gcr.io/cloud-builders/docker'
+  args: [
+  'push',
+  'africa-south1-docker.pkg.dev/$PROJECT_ID/jozimarket/cms:$SHORT_SHA'
+  ]
+
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: gcloud
+  args:
+    - run
+    - deploy
+    - cms
+    - --region=africa-south1
+    - --platform=managed
+    - --image=africa-south1-docker.pkg.dev/$PROJECT_ID/jozimarket/cms:$SHORT_SHA
+timeout: 1800s
+options:
+  logging: CLOUD_LOGGING_ONLY
